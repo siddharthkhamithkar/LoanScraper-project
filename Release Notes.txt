@@ -1,0 +1,63 @@
+Loan Scraper 1.0 Release Notes
+28/11/2022
+
+•	Base Discord Bot and Excel Logging has been created
+•	Discord Bot Functionality
+o	Immediate Discord Notification of new REQ post from r/Borrow
+o	Discord Message Contains
+	Borrower’s Username (with hyperlink)
+	Requested Amount
+	Return Amount (Buggy if repaid in instalments)
+	Profit
+	Profit %
+	Time of Posting (Both EST and PST in 12-hour clock format)
+	Location
+	Methods of Payment
+	Post link
+
+o	Runs 24/7
+•	Excel contains exact log of posts made to discord
+•	For Loan Scraper to work just run the code on host machine
+
+Loan Scraper 1.01 Release Notes
+12/1/22
+
+•    Added “main.exe” to the folder, runs in console window (no setup required)
+•    Formatting corrections for Discord Bot:
+o    Time_EST/PST to Time EST/PST
+o    Date format has been changed to H:M:am/pm - m/d/y (removed padded 0s)
+•    Added various error handlings (JSONDecodeError, KeyError & TypeError {All are self correcting})
+
+Loan Scraper 1.02 Release Notes
+12/15/22
+
+• Exclude REQ posts which have been pre arranged
+
+
+Loan Scraper 1.1 Release Notes
+12/23/2022
+
+•    Added the following columns:
+o    ROI Daily
+o    ROI Monthly
+o    Return Date
+•    Added currency to monetary amounts displayed
+•    Formatted output for modes of payment
+•    Temporarily readded pre-arranged posts due to technical issues with its exemption
+•    Added ValueError for incorrect date formats
+• Include ROI checker 
+o    Per Day ROI (1% per day) 
+o    Per Month ROI (20% per month, Ideal - 30%)
+• Write to google sheets instead of local file 
+
+
+
+Upcoming Release Notes
+Estimated Release 12/28/2022
+Patch 1.2
+•Show Borrower Whitelist Check
+      Show all in progress loans of OP
+      Entire r/borrow history of user
+      Loans given and taken by OP (all)
+
+
