@@ -1,0 +1,20 @@
+@startgantt gantt
+!theme aws-orange
+
+title GANTT: LoanScraper
+
+[  Theoretical modelling] lasts 14 days
+[  Database modelling] lasts 9 days
+[  Database designing] lasts 10 days
+[  Scripting] lasts 21 days
+[  Test prototyping] lasts 7 days
+[  Final draft] lasts 5 days
+
+[  Theoretical modelling] starts D+0
+[  Database modelling] starts D+0
+[  Database designing] starts d+9
+[  Scripting] starts d+14
+[  Test prototyping] starts d+28
+[  Final draft] starts d+35
+
+@endgantt
