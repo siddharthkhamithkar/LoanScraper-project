@@ -1,0 +1,41 @@
+@startuml pert
+!theme aws-orange
+
+
+left to right direction
+' Horizontal lines: -->, <--, <-->
+' Vertical lines: ->, <-, <->
+title PERT: LoanScraper
+
+map Start {
+}
+map TM {
+    D => D+14
+}
+map DM {
+    D => D+9
+}
+map DD {
+    D+9 => D+19
+}
+map SC {
+    D+17 => D+31
+}
+map TP {
+    D+31 => D+38
+}
+map FD {
+    D+38 => D+43
+}
+map End {
+}
+
+Start --> TM
+Start --> DM
+DM --> DD
+TM --> SC
+DD --> SC
+SC --> TP
+TP --> FD
+FD --> End
+@enduml

@@ -1,0 +1,49 @@
+@startuml dfd
+!theme aws-orange
+!define PROCESS rectangle
+!define DATA_STORE folder
+
+title DFD: LoanScraper
+
+skinparam rectangle {
+  BackgroundColor White
+  BorderColor Black
+}
+
+skinparam folder {
+  BackgroundColor White
+  BorderColor Black
+}
+
+left to right direction
+
+rectangle "Endpoints" as Endpoints {
+  actor post as "Reddit post"
+  actor externalSystem as "Discord message"
+  actor dashboard as "Dashboard"
+}
+
+rectangle "Processes" as Processes {
+  PROCESS scraping as "Scraping"
+  PROCESS sendMessage as "Sending a message"
+  PROCESS fetchMessage as "Fetching post details"
+  PROCESS calcAnalysis as "Analysis"
+  PROCESS fetchComments as "Fetching comment data"
+}
+
+rectangle "Database" as Database {
+  database db as "MongoDB"
+}
+
+post -down-> scraping : "Post data"
+scraping -down-> fetchMessage : "Post data"
+fetchMessage -down-> sendMessage : "Message data"
+sendMessage --> externalSystem : "Message data"
+sendMessage -down-> scraping : "Wait"
+scraping -down-> fetchComments : "Comment data"
+fetchComments -down-> sendMessage : "Message"
+scraping -down-> db : "Post data"
+db -down-> calcAnalysis : "Post data"
+db -down-> dashboard : "Display"
+calcAnalysis -up-> dashboard
+@enduml
