@@ -16,12 +16,15 @@ import gspread
 import gspread_dataframe as gd
 import logging
 
-client_id = "4N6bBAjVW65G6abUtBRAGw"
-secret_id = "H3wBPdCO3CPHY38-Qxa6W8tkK4dYfg"
+with open("config.json", "r") as config_file:
+    config = json.load(config_file)
+
+client_id = config["client_id"]
+secret_id = config["secret_id"]
 
 master_path = pathlib.Path(__file__).parent
 gc = gspread.service_account(filename=str(master_path / 'sheets_credentials.json'))
-gsheet_url = 'https://docs.google.com/spreadsheets/d/1K2AFXtG5BRZLC1v2Q_2GTzyd-c7kqkSB5sAoNeF5788/edit?usp=sharing'
+gsheet_url = config["spreadsheet_url"]
 sh = gc.open_by_url(gsheet_url)
 ws = sh.worksheet('Loans')
 logging.basicConfig(level=logging.ERROR, filename='errors.log')
@@ -34,10 +37,10 @@ def LoanScraper():
             auth = requests.auth.HTTPBasicAuth(client_id, secret_id)
 
             data = {"grant_type": "password",
-                    "username": "LoanTester123",
-                    "password": "loansbot101"}
+                    "username": config["username"],
+                    "password": config["password"]}
 
-            headers = {"User-Agent": "LoanBot/1.25"}
+            headers = {"User-Agent": "LoanBot/1.00"}
 
             res = requests.post("https://www.reddit.com/api/v1/access_token", auth=auth, data=data, headers=headers)
 
@@ -208,7 +211,7 @@ def LoanScraper():
                 df1["ROI Monthly"].values[0] = (float(df1["ROI Daily"].values[0]) * 30)
                 df1["ROI Monthly"].values[0] = number_formatting(df1["ROI Monthly"].values[0])
 
-                college_test_server_channel = "https://discord.com/api/webhooks/1128190652702802101/zevV8e7fUKj7chdwgsgUkDubYZeVtXMp9pzIFX2gitHMKLZCsYpabuOjSkgq6asxoPlG"
+                college_test_server_channel = "https://discord.com/api/webhooks/1134450758729871421/jtU5_J1Ig2n_0PpQtUniWe17giJtbz6RCl8ivri7ZCjsR2AOm1Azms43w263Non3BPVs"
 
                 discord_url = college_test_server_channel
 
@@ -577,15 +580,19 @@ def get_dataframe_from_gsheet():
     df = gd.get_as_dataframe(ws, use_cols=[0, 10])
     # Make sure items in dataframe are not null.
     df = df[df['Username'].notna()]
+    df = df.iloc[-10:]
     return df
 
 
 def save_to_google_sheets(df):
     gd.set_with_dataframe(worksheet=ws, dataframe=df)
+    #df = df.tail(1)
+    #new_entry = df.values.tolist()
+    #gd.append_rows(new_entry)
 
 
 if len(sys.argv) == 1:
-    print("YOU'RE USING GOD'S DISCORD URL. IF THIS ISN'T RIGHT CLOSE THE SCRIPT NOW.")
+    print("Starting LoanScraper")
     print_dot(times=3)
 
 
@@ -596,5 +603,4 @@ def check_log_size(log_file):
 
 
 LoanScraper()
-token = "MTA2MjMwNTkyNDA2NjMyODYxNw.GMliMd.Gd6MgjYcBtIElbHLD68TPQVxhzJ2VMFuoAlSn8"
-client.run(token)
+
