@@ -10,6 +10,7 @@ import pandas as pd
 import re
 from datetime import datetime
 import time
+from pymongo import MongoClient
 import pytz
 import discord
 import gspread
@@ -602,5 +603,22 @@ def check_log_size(log_file):
         open(log_file, 'w').close()
 
 
-LoanScraper()
+def pushToDB(df):
 
+    try:
+        uri = None
+        mongo_client = MongoClient(uri)
+        json_str = df.to_json(orient='records')
+        json_obj = json.loads(json_str)
+        dbname = mongo_client['LoanScraper']
+        coll = dbname['posts']
+        for record in json_obj:
+            res = coll.insert_one(record)
+            print("Inserted ID:", res.inserted_id)
+        coll.close()
+        return True
+    except Exception as e:
+        return e
+
+
+LoanScraper()
