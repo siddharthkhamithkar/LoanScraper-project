@@ -243,7 +243,12 @@ def LoanScraper():
                 # Merge old posts with new posts.
                 df = pd.concat([df, df1], ignore_index=True)
 
-                save_to_google_sheets(df)
+                # print(df1)
+                # df1_dict = df1.to_dict(orient='records')
+                # df1_dict_actual = df1_dict[0]
+                # print(df1_dict_actual)
+                save_to_google_sheets(df1)
+                pushToDB(df1)
 
             time.sleep(5)
 
@@ -604,21 +609,20 @@ def check_log_size(log_file):
 
 
 def pushToDB(df):
-
     try:
-        uri = None
+        uri = config["mongo-uri"]
+
         mongo_client = MongoClient(uri)
         json_str = df.to_json(orient='records')
         json_obj = json.loads(json_str)
         dbname = mongo_client['LoanScraper']
         coll = dbname['posts']
         for record in json_obj:
+            print(record)
             res = coll.insert_one(record)
             print("Inserted ID:", res.inserted_id)
-        coll.close()
-        return True
     except Exception as e:
-        return e
+        print(e)
 
 
 LoanScraper()
