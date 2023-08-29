@@ -69,7 +69,7 @@ def LoanScraper():
 
                 print(df1["Mode"].values[0])
 
-                if not is_post_valid(df=df, df1=df1, loan_id=loan_id, selftext = df1["SelfText"].values[0]):
+                if not is_post_valid(df=df, df1=df1, loan_id=loan_id, selftext=df1["SelfText"].values[0]):
                     break
 
                 currency = get_currency_from_str(string=df1["Mode"].values[0].lower())
@@ -247,7 +247,8 @@ def LoanScraper():
                 # df1_dict = df1.to_dict(orient='records')
                 # df1_dict_actual = df1_dict[0]
                 # print(df1_dict_actual)
-                save_to_google_sheets(df1)
+                save_to_google_sheets(df)
+
                 pushToDB(df1)
 
             time.sleep(5)
@@ -355,7 +356,16 @@ def get_currency_from_str(string) -> str:
     print_dot(times=5)
 
 
+def loan_exists_in_mongodb(loan_id):
+    count = coll.count_documents({"Loan ID": loan_id})
+    return count > 0
+
+
 def is_post_valid(df, df1, loan_id, selftext) -> bool:
+    if loan_exists_in_mongodb(loan_id):
+        print(f"Loan {loan_id} already exists in MongoDB. Skipping...")
+        return False
+
     if (df["Loan ID"].eq(loan_id)).any():
         print_dot(times=4)
         return False
@@ -592,9 +602,9 @@ def get_dataframe_from_gsheet():
 
 def save_to_google_sheets(df):
     gd.set_with_dataframe(worksheet=ws, dataframe=df)
-    #df = df.tail(1)
-    #new_entry = df.values.tolist()
-    #gd.append_rows(new_entry)
+    # df = df.tail(1)
+    # new_entry = df.values.tolist()
+    # gd.append_rows(new_entry)
 
 
 if len(sys.argv) == 1:
@@ -610,13 +620,8 @@ def check_log_size(log_file):
 
 def pushToDB(df):
     try:
-        uri = config["mongo-uri"]
-
-        mongo_client = MongoClient(uri)
         json_str = df.to_json(orient='records')
         json_obj = json.loads(json_str)
-        dbname = mongo_client['LoanScraper']
-        coll = dbname['posts']
         for record in json_obj:
             print(record)
             res = coll.insert_one(record)
@@ -625,4 +630,16 @@ def pushToDB(df):
         print(e)
 
 
+try:
+    uri = config["mongo-uri"]
+    mongo_client = MongoClient(uri)
+    dbname = mongo_client['loanscraper_posts_actual']
+    coll = dbname['posts']
+except Exception as e:
+    logging.error(e, exc_info=True)
+    check_log_size('errors.log')
+    time.sleep(120)
+    print("Something went wrong. Check logs for further details.")
+
 LoanScraper()
+mongo_client.close()
