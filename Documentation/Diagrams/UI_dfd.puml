@@ -1,0 +1,43 @@
+@startuml UI_dfd
+!theme aws-orange
+
+
+!define PROCESS rectangle
+!define POINT circle
+
+
+skinparam rectangle {
+  BackgroundColor White
+  BorderColor Black
+}
+
+skinparam circle {
+  BackgroundColor White
+  BorderColor Black
+}
+
+
+top to bottom direction
+
+
+PROCESS "Parse data according to filters" as parse
+PROCESS "store all data in multiple JSONs" as data_store
+PROCESS "Store filters in JSON" as filter_store
+PROCESS "Python" as python
+PROCESS "JS UI (Start)" as js
+
+
+rectangle {
+  database "Loans" as loans
+  database "Filters" as filters
+}
+
+
+python --> parse
+parse -> data_store
+data_store --> js : "Read JSON Data for Charts"
+js -> filters : "Write Data range and Filters"
+filters --> filter_store : "Read filters"
+filters -> python
+loans --> python : "Pull all dataframes"
+@enduml
