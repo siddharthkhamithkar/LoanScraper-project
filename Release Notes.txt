@@ -48,7 +48,7 @@ o    Return Date
 • Include ROI checker 
 o    Per Day ROI (1% per day) 
 o    Per Month ROI (20% per month, Ideal - 30%)
-• Write to google sheets instead of local file 
+• Write to MongoDB instead of Google sheets 
 
 
 
